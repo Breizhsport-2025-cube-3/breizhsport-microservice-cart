@@ -6,27 +6,38 @@ module.exports = {
   addToCart: async (req, res) => {
     try {
       const { productId, name, price, quantity } = req.body;
-
+  
+      // Log les données reçues
+      console.log('Données reçues dans la requête :', req.body);
+  
       if (!productId || !name || !price) {
         return res.status(400).json({ message: 'Les champs productId, name et price sont requis.' });
       }
-
+  
+      // Log l'action en cours
+      console.log('Vérification si le produit existe déjà dans le panier...');
+  
       const [cartItem, created] = await Cart.findOrCreate({
         where: { productId },
         defaults: { name, price, quantity: quantity || 1 },
       });
-
-      if (!created) {
+  
+      if (created) {
+        console.log('Produit créé dans le panier :', cartItem);
+      } else {
+        console.log('Produit déjà présent, mise à jour de la quantité...');
         cartItem.quantity += quantity || 1;
         await cartItem.save();
+        console.log('Produit mis à jour :', cartItem);
       }
-
+  
       res.status(201).json(cartItem);
     } catch (error) {
       console.error(`Erreur lors de l'ajout au panier : ${error.message}`);
       res.status(500).json({ message: `Erreur interne du serveur : ${error.message}` });
     }
   },
+  
 
   // Voir le contenu du panier
   getCart: async (req, res) => {
