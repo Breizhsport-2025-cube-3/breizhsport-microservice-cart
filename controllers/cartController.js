@@ -5,33 +5,29 @@ module.exports = {
   // Ajouter un produit au panier
   addToCart: async (req, res) => {
     try {
-      const { productId, name, price, quantity } = req.body;
+        const { productId, name, price, quantity } = req.body;
 
-      if (!productId || !name || !price) {
-        return res.status(400).json({
-          message: 'Les champs "productId", "name" et "price" sont requis.',
+        if (!productId || !name || !price) {
+            return res.status(400).json({ message: 'Les champs "productId", "name" et "price" sont requis.' });
+        }
+
+        const [cartItem, created] = await Cart.findOrCreate({
+            where: { productId },
+            defaults: { name, price, quantity: quantity || 1 },
         });
-      }
 
-      // Ajouter ou mettre à jour le produit dans le panier
-      const [cartItem, created] = await Cart.findOrCreate({
-        where: { productId },
-        defaults: { name, price, quantity: quantity || 1 },
-      });
+        if (!created) {
+            cartItem.quantity += quantity || 1;
+            await cartItem.save();
+        }
 
-      if (!created) {
-        cartItem.quantity += quantity || 1;
-        await cartItem.save();
-      }
-
-      res.status(201).json(cartItem);
+        res.status(201).json(cartItem);
     } catch (error) {
-      console.error("Erreur lors de l'ajout au panier :", error);
-      res
-        .status(500)
-        .json({ message: "Erreur interne du serveur.", details: error.message });
+        res.status(500).json({ message: "Erreur interne du serveur." });
     }
-  },
+},
+
+
 
   // Récupérer tout le contenu du panier
   getCart: async (req, res) => {
