@@ -1,7 +1,7 @@
-const { DataTypes } = require('sequelize');
+import { DataTypes } from "sequelize";
 
-module.exports = (sequelize) => {
-  return sequelize.define('Cart', {
+export default (sequelize) => {
+  return sequelize.define("Cart", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -36,6 +36,6 @@ module.exports = (sequelize) => {
     },
   }, {
     tableName: 'cart',
-    timestamps: true, // Active les champs createdAt et updatedAt
+    timestamps: true,
   });
 };

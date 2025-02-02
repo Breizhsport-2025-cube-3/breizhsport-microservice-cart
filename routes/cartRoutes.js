@@ -1,11 +1,18 @@
-const express = require('express');
+import express from "express";
+import cartController from "../controllers/cartController.js";
+
 const router = express.Router();
-const cartController = require('../controllers/cartController');
 
-// Routes pour le panier
-router.post('/add', cartController.addToCart); // Ajouter un produit au panier
-router.get('/', cartController.getCart); // Voir le contenu du panier
-router.delete('/:id', cartController.removeFromCart); // Supprimer un produit du panier
-router.put('/:id', cartController.updateCartItem); // Mettre à jour la quantité d'un produit
+router.post('/add', cartController.addToCart);
+router.get('/', cartController.getCart);
+router.delete('/', cartController.clearCart);
+router.delete('/:id', cartController.removeFromCart);
 
-module.exports = router;
+// ✅ Vérification que updateCartItem est bien défini avant l'ajout de la route
+if (cartController.updateCartItem) {
+  router.put('/:productId', cartController.updateCartItem);
+} else {
+  console.error("❌ ERREUR : updateCartItem est undefined !");
+}
+
+export default router;
