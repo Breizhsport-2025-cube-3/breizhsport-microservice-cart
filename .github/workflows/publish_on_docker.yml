@@ -1,12 +1,14 @@
-name: Build & Deploy Cart Service
+name: Build, Test & Deploy Cart Service
 
 on:
   push:
     branches:
       - main
+      - dev
   pull_request:
     branches:
       - main
+      - dev
 
 jobs:
   build-cart-service:
@@ -23,13 +25,18 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Run Tests
+        run: npx vitest run
+
       - name: Build Service
         run: npm run build || echo "No build step needed"
 
   publish-on-docker:
     needs: [build-cart-service]
+    if: github.ref == 'refs/heads/main'
     uses: Breizhsport-2025-cube-3/breizhsport-infra/.github/workflows/publish_on_docker.yml@main
     secrets:
       tags: ${{ secrets.DOCKER_USERNAME }}/breizhsport-cart:develop
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PAT: ${{ secrets.DOCKER_PAT }}
+
