@@ -25,7 +25,33 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # Créer un fichier .env à partir des secrets GitHub
+      - name: Setup Environment Variables
+        run: |
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_DIALECT=${{ secrets.DB_DIALECT }}" >> .env
+          echo "DB_POOL_MAX=${{ secrets.DB_POOL_MAX }}" >> .env
+          echo "DB_POOL_MIN=${{ secrets.DB_POOL_MIN }}" >> .env
+          echo "DB_POOL_IDLE=${{ secrets.DB_POOL_IDLE }}" >> .env
+          echo "DB_POOL_ACQUIRE=${{ secrets.DB_POOL_ACQUIRE }}" >> .env
+
+      # Exécuter les tests en utilisant les variables d'environnement
       - name: Run Tests
+        env:
+          PORT: ${{ secrets.PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_DIALECT: ${{ secrets.DB_DIALECT }}
+          DB_POOL_MAX: ${{ secrets.DB_POOL_MAX }}
+          DB_POOL_MIN: ${{ secrets.DB_POOL_MIN }}
+          DB_POOL_IDLE: ${{ secrets.DB_POOL_IDLE }}
+          DB_POOL_ACQUIRE: ${{ secrets.DB_POOL_ACQUIRE }}
         run: npx vitest run
 
       - name: Build Service
@@ -39,4 +65,3 @@ jobs:
       tags: ${{ secrets.DOCKER_USERNAME }}/breizhsport-cart:develop
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PAT: ${{ secrets.DOCKER_PAT }}
-
