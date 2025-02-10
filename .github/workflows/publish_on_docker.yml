@@ -11,7 +11,8 @@ on:
       - dev
 
 jobs:
-  build-cart-service:
+  # Job 1 : Vérification des dépendances
+  check-dependencies:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
@@ -25,21 +26,22 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # Créer un fichier .env à partir des secrets GitHub
-      - name: Setup Environment Variables
-        run: |
-          echo "PORT=${{ secrets.PORT }}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_DIALECT=${{ secrets.DB_DIALECT }}" >> .env
-          echo "DB_POOL_MAX=${{ secrets.DB_POOL_MAX }}" >> .env
-          echo "DB_POOL_MIN=${{ secrets.DB_POOL_MIN }}" >> .env
-          echo "DB_POOL_IDLE=${{ secrets.DB_POOL_IDLE }}" >> .env
-          echo "DB_POOL_ACQUIRE=${{ secrets.DB_POOL_ACQUIRE }}" >> .env
+  # Job 2 : Exécution des tests (dépend du job des dépendances)
+  run-tests:
+    runs-on: ubuntu-22.04
+    needs: check-dependencies
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      # Exécuter les tests en utilisant les variables d'environnement
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Install Dependencies
+        run: npm install
+
       - name: Run Tests
         env:
           PORT: ${{ secrets.PORT }}
@@ -54,11 +56,29 @@ jobs:
           DB_POOL_ACQUIRE: ${{ secrets.DB_POOL_ACQUIRE }}
         run: npx vitest run
 
+  # Job 3 : Construction du service (dépend des tests)
+  build-service:
+    runs-on: ubuntu-22.04
+    needs: run-tests
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Install Dependencies
+        run: npm install
+
       - name: Build Service
         run: npm run build || echo "No build step needed"
 
+  # Job 4 : Publication sur Docker (seulement sur la branche main)
   publish-on-docker:
-    needs: [build-cart-service]
+    runs-on: ubuntu-22.04
+    needs: build-service
     if: github.ref == 'refs/heads/main'
     uses: Breizhsport-2025-cube-3/breizhsport-infra/.github/workflows/publish_on_docker.yml@main
     secrets:
