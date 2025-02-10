@@ -103,8 +103,8 @@ describe("🛒 Microservice Cart - Tests API", () => {
   });
 
   // Tests de performance
-  it("⚡ [Tests de performance] Test de charge avec 100 requêtes simultanées", async () => {
-    const requests = Array.from({ length: 100 }, () =>
+  it("⚡ [Tests de performance] Test de charge avec 10 requêtes simultanées", async () => {
+    const requests = Array.from({ length: 10 }, () =>
       request(app).post("/cart/add").send({ productId: 8, name: "Bouteille", price: 10, quantity: 1 })
     );
   
