@@ -77,7 +77,6 @@ jobs:
 
   # Job 4 : Publication sur Docker (seulement sur la branche main)
   publish-on-docker:
-    runs-on: ubuntu-22.04
     needs: build-service
     if: github.ref == 'refs/heads/main'
     uses: Breizhsport-2025-cube-3/breizhsport-infra/.github/workflows/publish_on_docker.yml@main
