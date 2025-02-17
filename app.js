@@ -3,7 +3,7 @@ import cartRoutes from "./routes/cartRoutes.js";
 import sequelize from "./config/db.js"; // Ajout du ".js"
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4001;
 
 // Middleware JSON
 app.use(express.json());

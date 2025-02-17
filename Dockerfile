@@ -8,5 +8,5 @@ RUN npm install --omit=dev
 
 COPY . .
 
-EXPOSE 4003
+EXPOSE 4001
 CMD ["node", "app.js"]
