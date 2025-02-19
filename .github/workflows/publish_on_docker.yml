@@ -81,6 +81,6 @@ jobs:
     if: github.ref == 'refs/heads/main'
     uses: Breizhsport-2025-cube-3/breizhsport-infra/.github/workflows/publish_on_docker.yml@main
     secrets:
-      tags: ${{ secrets.DOCKER_USERNAME }}/breizhsport-cart:develop
+      tags: ${{ secrets.DOCKER_USERNAME }}/breizhsport-cart:v0.1
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PAT: ${{ secrets.DOCKER_PAT }}

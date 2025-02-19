@@ -14,8 +14,8 @@ app.use("/cart", cartRoutes);
 // Synchronisation de la base de données et démarrage du serveur
 sequelize.sync()
   .then(() => {
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`✅ Serveur démarré sur http://0.0.0.0:${PORT}`);
+    app.listen(PORT, () => {
+      console.log(`✅ Serveur démarré sur http://127.0.0.1:${PORT}`);
     });
   })
   .catch((err) => console.error("Erreur de synchronisation avec la base de données:", err));
